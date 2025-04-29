@@ -4,14 +4,81 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <canvas>
-
-    </canvas>
 
 
-    <script src="./main.js"></script>
-    
+    <div id="game">
+        <div id="row-1" class="row">
+            <button class="game-button" id="game-button-0">&nbsp;</button>
+            <button class="game-button" id="game-button-1">&nbsp;</button>
+            <button class="game-button" id="game-button-2">&nbsp;</button>
+        </div>
+        <div id="row-2" class="row">
+            <button class="game-button" id="game-button-3">&nbsp;</button>
+            <button class="game-button" id="game-button-4">&nbsp;</button>
+            <button class="game-button" id="game-button-5">&nbsp;</button>
+        </div>
+        <div id="row-3" class="row">
+            <button class="game-button" id="game-button-6">&nbsp;</button>
+            <button class="game-button" id="game-button-7">&nbsp;</button>
+            <button class="game-button" id="game-button-8">&nbsp;</button>
+        </div>        
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+
+        var crossToTurn = false;
+
+        var playerTurns = ["", "", "", "", "", "", "", "", ""]
+
+        function checkWinner(board) { // returns X or O or null
+            const winningCombinations = [
+              [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
+              [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
+              [0, 4, 8], [2, 4, 6]             // diagonals
+            ];
+          
+            for (const [a, b, c] of winningCombinations) {
+              if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                return board[a]; 
+              }
+            }
+          
+            return null; // no winner
+        }
+
+        function checkGameOver() {
+            let w = checkWinner(playerTurns);
+            if (w != null) { // there is a winner
+                alert(`Player ${w} has won!`)
+            }
+        }
+          
+
+
+        $(".game-button").map(function() {
+            $(this).on("click",function() {
+                let ownPosition = $(this).attr("id").split("-")[2]; // gat own field id
+
+                if ($(this).html() == "&nbsp;") { // looks if field is free
+
+                    if (crossToTurn) {
+                        $(this).text("X");
+                    } else {
+                        $(this).text("O");
+                    }
+
+                    crossToTurn = !crossToTurn; // update next player
+                    playerTurns[ownPosition] = $(this).text(); // update game state
+
+                    checkGameOver()
+                }
+            });
+        
+        });
+    </script>
 </body>
 </html>
