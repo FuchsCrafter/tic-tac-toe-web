@@ -8,6 +8,10 @@
 </head>
 <body>
 
+    <div class="output" id="output"></div>
+
+    <div id="turnInfo" hidden="true"><h1>Sie sind am Zug</h1></div>
+
 
     <div id="game">
         <div id="row-1" class="row">
@@ -27,12 +31,51 @@
         </div>        
     </div>
 
+    <div id="prepop">
+        <h1>Tic-Tac-Toe</h1>
+        <div id="prepop-panel">
+            <div class="prepop-option" id="prepop-new">
+                <h2>Neues Spiel</h2>
+            </div>
+            <div class="prepop-option" id="prepop-join">
+                <h2>Spiel beitreten</h2>
+                <input type="text" id="joinGameIdInp" name="joinGameIdInp">
+                <label for="joinGameIdInp">Bitte Code eingeben</label> <br>
+                <button id="joinGameBtn">Spiel beitreten</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="prejoin" hidden="true">
+        <span>Ihr Code lautet:</span>
+        <h1 id="prejoin-gameid"></h1>
+    </div>
+
+    <div id="gameover" hidden="true">
+        <div>
+            <span>Game Over!</span> <br>
+            <span id="gameover-winner">Spieler O hat gewonnen!</span>
+        </div>
+    </div>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
 
-        var crossToTurn = false;
+        const backend = "http://localhost:5050"
 
+
+        var crossToTurn = false;
         var playerTurns = ["", "", "", "", "", "", "", "", ""]
+        var playerId, gameId, gameRunning
+        gameRunning = false;
+
+        var selfIsCross = false;
+
+
+        function output(msg) {
+            $("#output").append(msg);
+            $("#output").append("<br>");
+        }
 
         function checkWinner(board) { // returns X or O or null
             const winningCombinations = [
@@ -53,31 +96,313 @@
         function checkGameOver() {
             let w = checkWinner(playerTurns);
             if (w != null) { // there is a winner
-                alert(`Player ${w} has won!`)
+                console.log(`Spieler ${w} hat gewonnen!`)
+                gameRunning = false;
+                clearInterval(updateGameBoard);
+
+                playerTurns = ["", "", "", "", "", "", "", "", ""]
+                crossToTurn = false;
+                selfIsCross = false;
+
+                $("#gameover").show();
+
+                setTimeout(function() {
+                    $("#gameover").fadeOut();
+                    $("#prepop").show();
+                }, 7000);
+
             }
         }
+
+        
           
+        function submitMove(pos) {
+
+            fetch(backend + "/makemove", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                  },
+                body: JSON.stringify({ "gameId": gameId, "playerId": playerId, "field": pos })
+            })
+
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                        alert("Failed to connect to server! \nBackend might be offline!")
+                    }
+                    return response.json();
+                   
+
+                })
+                .then(data => {
+
+                    output("Submitted move");
+
+                    if (data["success"]) {
+
+                        playerTurns = data["gameState"];
+
+                        playerTurns.forEach(function(value, index) {
+                            if (value != '') {
+                                $( "#game-button-"+index.toString() ).text(value);
+                            } else {
+                                $( "#game-button-"+index.toString() ).html("&nbsp;");
+                            }
+                        });
+
+                        if (playerTurns.filter(item => item === "O").length == playerTurns.filter(item => item === "X").length) {
+                            crossToTurn = false;
+                        }
+                        else { crossToTurn = true;}
 
 
-        $(".game-button").map(function() {
-            $(this).on("click",function() {
-                let ownPosition = $(this).attr("id").split("-")[2]; // gat own field id
-
-                if ($(this).html() == "&nbsp;") { // looks if field is free
-
-                    if (crossToTurn) {
-                        $(this).text("X");
-                    } else {
-                        $(this).text("O");
                     }
 
-                    crossToTurn = !crossToTurn; // update next player
-                    playerTurns[ownPosition] = $(this).text(); // update game state
 
-                    checkGameOver()
-                }
-            });
+
+
+                })
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation:', error);
+                     
+                });
+        }
+
+        function newGame() {
+
+            $("#prepop").hide();
+
+            fetch(backend + "/newgame")
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                        alert("Failed to connect to server! \nBackend might be offline!")
+                    }
+                    return response.json();
+                    
+
+                })
+                .then(data => {
+                    
+
+                    if (data["success"]) {
+                        playerId = data["playerId"];
+                        gameId = data["gameId"];
+
+                        output(`Player ID: ${playerId}, Game ID: ${gameId}`);
+
+                        $("#prejoin").show();
+                        $("#prejoin-gameid").text(`${gameId.toString().substring(0,3)} ${gameId.toString().substring(3)}`);
+
+                        setTimeout(waitForPlayerConnection, 3000);
+                    } else {
+                        $("#prepop").show();
+                    }
+
+
+
+                })
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation:', error);
+                     
+                });
+
+
+        }
+
+        function joinGameHandler() {
+            let joinId = parseInt( $("#joinGameIdInp").val().replace(/[^0-9]/g, '') );
+
+            if (!( joinId >= 1000000 && joinId <= 9999999)) {
+                return
+            } else {
+                output(`Trete spiel bei: ${joinId}`);
+
+                $("#prepop").hide();
+
+                fetch(backend + "/joingame", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                      },
+                    body: JSON.stringify({ "gameId": joinId })
+                })
+
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok ' + response.statusText);
+                            alert("Failed to connect to server! \nBackend might be offline!")
+                        }
+                        return response.json();
+                        
+    
+                    })
+                    .then(data => {
+                        
+
+                        if (data["success"]) {
+                            playerId = parseInt( data["playerId"] );
+                            gameId = parseInt( data["gameId"] );
         
+                            output(`Spieler ID: ${playerId}, Spiel ID: ${gameId}`);
+
+                            selfIsCross = true;
+                            gameRunning = true;
+
+                            setInterval(updateGameBoard, 1500);
+
+
+                        } else {
+                            $("#prepop").show();
+                        }
+
+
+                    })
+                    .catch(error => {
+                        console.error('There has been a problem with your fetch operation:', error);
+                         
+                    });
+            }
+        }
+
+        function waitForPlayerConnection() {
+
+
+            fetch(backend + "/waitconnection", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                  },
+                body: JSON.stringify({ "gameId": gameId })
+            })
+
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                        alert("Failed to connect to server! \nBackend might be offline!")
+                    }
+                    return response.json();
+                    console.log( JSON.stringify({ "gameId": gameId }));
+                    
+
+                })
+                .then(data => {
+                    
+
+                    if (data["success"]) {
+                        if (data["otherPlayerConnected"]) {
+                            $("#prejoin").hide();
+                            gameRunning = true;
+                            output("Spieler 2 beigetreten");
+
+                            setInterval(updateGameBoard, 1500);
+                        }
+                        else {
+                            gameRunning = false;
+
+                            setTimeout(waitForPlayerConnection, 700);
+                        }
+                    }
+
+
+
+
+                })
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation:', error);
+                     
+                });
+
+
+        }
+        
+        function updateGameBoard() {
+            fetch(backend + "/gamestate", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                  },
+                body: JSON.stringify({ "gameId": gameId })
+            })
+
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                        alert("Failed to connect to server! \nBackend might be offline!")
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    
+
+                    if (data["success"] && gameRunning) {
+
+                        playerTurns = data["gameState"];
+
+                        playerTurns.forEach(function(value, index) {
+                            if (value != '') {
+                                $( "#game-button-"+index.toString() ).text(value);
+                            } else {
+                                $( "#game-button-"+index.toString() ).html("&nbsp;");
+                            }
+                        });
+
+                        if (playerTurns.filter(item => item === "O").length == playerTurns.filter(item => item === "X").length) {
+                            crossToTurn = false;
+                        }
+                        else { 
+                            crossToTurn = true;
+                        }
+
+                        if (selfIsCross == crossToTurn) {
+                            $("#turnInfo").fadeIn();
+                        } else {
+                            $("#turnInfo").fadeOut();
+                        }
+
+
+
+                        checkGameOver();
+                    }
+                })
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation:', error);
+                     
+                });
+        }
+
+
+        window.addEventListener('load', function() {
+            $(".game-button").map(function() {
+                $(this).on("click",function() {
+                    let ownPosition = parseInt($(this).attr("id").split("-")[2]); // get own field id
+                    output(`Feld geklickt: ${ownPosition}`);
+                    if ( (($(this).html() == "&nbsp;") || ($(this).html() == ""))  && (crossToTurn == selfIsCross) && gameRunning) { // looks if field is free
+                        
+                        
+    
+                        // if (crossToTurn && selfIsCross) {
+                        //     $(this).text("X");
+                        // } else if (!(crossToTurn) && !(selfIsCross)){
+                        //     $(this).text("O");
+                        // }
+    
+                        // playerTurns[ownPosition] = $(this).text(); // update game state
+                        submitMove(ownPosition);
+                        updateGameBoard();
+                        checkGameOver();
+
+                    }
+                });
+            });
+
+            $("#prepop-new").on("click", newGame);
+
+            $("#joinGameBtn").on("click", joinGameHandler);
+
+
+
         });
     </script>
 </body>
