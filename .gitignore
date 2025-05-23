@@ -2,6 +2,10 @@
 *.doc
 *.docx
 
+.env
+init.php
+database.php
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
