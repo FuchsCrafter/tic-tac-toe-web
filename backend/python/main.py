@@ -68,8 +68,9 @@ def registerNewPlayer():
             games = {}
                         
         games[str(newGameId)] = {"gameState": [""] * 9, "playerO": playerIds[0], "playerX": playerIds[1], "playerXconnected": False}
+        return json.dumps({"success": True, "message": "New player registered", "gameId": newGameId, "playerId": playerIds[0]}) 
     except:
-        return json.dumps({"success": True, "message": "New player registered", "gameId": newGameId, "playerId": playerIds[0]})
+        return json.dumps({"success": False, "message": "Something went wrong"})
 
 
 @app.route('/joingame', methods=['POST'])
