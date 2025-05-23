@@ -31,24 +31,38 @@
         </div>        
     </div>
 
+
+    <!-- #prepop-new #dismissStartPopup #prepop-join -->
     <div id="prepop">
-        <h1>Tic-Tac-Toe</h1>
+        <h1>Tic Tac Toe</h1> 
         <div id="prepop-panel">
-            <div class="prepop-option" id="prepop-new">
-                <h2>Neues Spiel</h2>
-            </div>
-            <div class="prepop-option" id="prepop-join">
+
+            <div class="prepop-option" id="prepop-new"><span>Neues<br>Spiel</span></div>
+            <div class="prepop-option" id="prepop-join"><span>Spiel<br>beitreten</span></div>
+            <div class="prepop-option" id="dismissStartPopup"><span>Einzel-<br>spieler</span></div>
+
+            <!--<div class="prepop-option" id="prepop-join">
                 <h2>Spiel beitreten</h2>
                 <input type="text" id="joinGameIdInp" name="joinGameIdInp">
                 <label for="joinGameIdInp">Bitte Code eingeben</label> <br>
                 <button id="joinGameBtn">Spiel beitreten</button>
-            </div>
+            </div>-->
         </div>
     </div>
 
     <div id="prejoin" hidden="true">
-        <span>Ihr Code lautet:</span>
+        <span id="prejoin-title">Ihr Beitrittscode lautet:</span>
         <h1 id="prejoin-gameid"></h1>
+        <span id="prejoin-subtitle">Warten auf Spieler 2...</span>
+    </div>
+
+    <div id="joincode" hidden="true">
+        <span id="joincode-title">Spiel Beitreten</span>
+        <div>
+            <input type="text" id="joincode-input" name="joincode-input"> <br>
+            <label for="joincode-input" id="joincode-label">Bitte Beitrittscode eingeben!</label>
+        </div>
+        <div id="joincode-button">Beitreten!</div>
     </div>
 
     <div id="gameover" hidden="true">
@@ -61,10 +75,12 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
 
-        const backend = "http://localhost:5050"
+        const backend = "http://localhost:5050";
+        const backendFileExt = "";
 
 
         var crossToTurn = false;
+        var testMode = false;
         var playerTurns = ["", "", "", "", "", "", "", "", ""]
         var playerId, gameId, gameRunning
         gameRunning = false;
@@ -113,12 +129,10 @@
 
             }
         }
-
-        
           
         function submitMove(pos) {
 
-            fetch(backend + "/makemove", {
+            fetch(backend + "/makemove" + backendFileExt, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -146,8 +160,10 @@
                         playerTurns.forEach(function(value, index) {
                             if (value != '') {
                                 $( "#game-button-"+index.toString() ).text(value);
+                                $( "#game-button-"+index.toString() ).attr("data-player", value);
                             } else {
                                 $( "#game-button-"+index.toString() ).html("&nbsp;");
+                                $( "#game-button-"+index.toString() ).removeAttr("data-player");
                             }
                         });
 
@@ -173,7 +189,7 @@
 
             $("#prepop").hide();
 
-            fetch(backend + "/newgame")
+            fetch(backend + "/newgame" + backendFileExt)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok ' + response.statusText);
@@ -194,6 +210,9 @@
 
                         $("#prejoin").show();
                         $("#prejoin-gameid").text(`${gameId.toString().substring(0,3)} ${gameId.toString().substring(3)}`);
+                        $("#prejoin-gameid").on("click", function() {
+                            navigator.clipboard.writeText(gameId.toString());
+                        });
 
                         setTimeout(waitForPlayerConnection, 3000);
                     } else {
@@ -212,16 +231,17 @@
         }
 
         function joinGameHandler() {
-            let joinId = parseInt( $("#joinGameIdInp").val().replace(/[^0-9]/g, '') );
+
+            let joinId = parseInt( $("#joincode-input").val().replace(/[^0-9]/g, '') );
 
             if (!( joinId >= 1000000 && joinId <= 9999999)) {
                 return
             } else {
                 output(`Trete spiel bei: ${joinId}`);
 
-                $("#prepop").hide();
+                $("#joincode").hide();
 
-                fetch(backend + "/joingame", {
+                fetch(backend + "/joingame" + backendFileExt, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -254,7 +274,7 @@
 
 
                         } else {
-                            $("#prepop").show();
+                            $("#joincode").show();
                         }
 
 
@@ -269,7 +289,7 @@
         function waitForPlayerConnection() {
 
 
-            fetch(backend + "/waitconnection", {
+            fetch(backend + "/waitconnection" + backendFileExt, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -318,7 +338,7 @@
         }
         
         function updateGameBoard() {
-            fetch(backend + "/gamestate", {
+            fetch(backend + "/gamestate" + backendFileExt, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -343,8 +363,10 @@
                         playerTurns.forEach(function(value, index) {
                             if (value != '') {
                                 $( "#game-button-"+index.toString() ).text(value);
+                                $( "#game-button-"+index.toString() ).attr("data-player", value);
                             } else {
                                 $( "#game-button-"+index.toString() ).html("&nbsp;");
+                                $( "#game-button-"+index.toString() ).removeAttr("data-player");
                             }
                         });
 
@@ -378,10 +400,20 @@
                 $(this).on("click",function() {
                     let ownPosition = parseInt($(this).attr("id").split("-")[2]); // get own field id
                     output(`Feld geklickt: ${ownPosition}`);
-                    if ( (($(this).html() == "&nbsp;") || ($(this).html() == ""))  && (crossToTurn == selfIsCross) && gameRunning) { // looks if field is free
-                        
-                        
-    
+                    if (testMode) {
+                        if ($(this).html() == "&nbsp;") {
+                            $(this).text("X");
+                            $(this).attr("data-player", "X");
+                        } else if ($(this).text() == "X") {
+                            $(this).text("O");
+                            $(this).attr("data-player", "O");
+                        } else if ($(this).text() == "O") {
+                            $(this).html("&nbsp;");
+                            $(this).removeAttr("data-player");
+                        }
+                    }
+
+                    if ( (($(this).html() == "&nbsp;") || ($(this).html() == ""))  && (crossToTurn == selfIsCross) && gameRunning && !testMode) { // looks if field is free
                         // if (crossToTurn && selfIsCross) {
                         //     $(this).text("X");
                         // } else if (!(crossToTurn) && !(selfIsCross)){
@@ -397,9 +429,20 @@
                 });
             });
 
-            $("#prepop-new").on("click", newGame);
+            $("#prejoin").hide();
+            $("#joincode").hide();
 
-            $("#joinGameBtn").on("click", joinGameHandler);
+
+            $("#prepop-new").on("click", newGame);
+            $("#prepop-join").on("click", function(){$("#joincode").show(); $("#prepop").hide();});
+            $("#joincode-button").on("click", joinGameHandler);
+
+
+            $("#dismissStartPopup").on("click", function() {
+                $("#prepop").hide();
+                $("#turnInfo").show();
+                testMode = true;
+            })
 
 
 
