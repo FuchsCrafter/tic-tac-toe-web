@@ -3,7 +3,7 @@
 *.docx
 
 .env
-init.php
+env.php
 database.php
 
 # Byte-compiled / optimized / DLL files
