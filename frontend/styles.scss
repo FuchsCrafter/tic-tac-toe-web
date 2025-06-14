@@ -516,34 +516,77 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
 
-    background-color: white;
-    box-shadow: 1px 0px 0px 20000vh rgba(0,0,0,0.8);
+    background-color: #FF6361;
+    color:white;
+    @extend .racing-sans-one-regular;
+    //box-shadow: 1px 0px 0px 20000vh rgba(0,0,0,0.8);
 
     padding: 20px;
 
     border-radius: 5px;
 
-    width: 40%;
-    height: 35%;
+    width: 800px;
+    height: 400px;
 
     text-align: center;
 
+
     div {
-
-        position: relative;
-        top: 50%;
-        left: 50%;
+        padding: 0;
         margin: 0;
+    }
 
-        transform: translate(-50%, -50%);
-
-        font-size: 2rem;
-        span {
-            margin-top: 10px;
-            margin-bottom: 10px;
-        }
-
+    #gameover-title {
+        font-size: 128px;
+        padding: 0;
+        margin: 0;
+        margin-top: -20px;
 
     }
+    #gameover-winner-wrapper {
+        font-size: 60px;
+        padding: 0;
+        margin: 0;
+
+        margin-top: 0px;
+    }
+    #gameover-return {
+        padding: 0;
+        margin: 0;
+
+        width: 400px;
+        height: 70px;
+        font-size: 48px;
+        background-color: #FF8531;
+
+        position: relative;
+        left: 50%;
+        bottom: -20px;
+
+        transform: translateX(-50%) scale(1);
+
+        border-radius: 15px;
+        cursor:pointer;
+
+
+        transition: transform 150ms ease;
+
+        &:hover {
+            transform: scale(1.05) translateX(-47.5%);
+            &:active {
+                transform: scale(1) translateX(-50%);
+            }
+        }
+        @media screen and (max-width: 1050px) {
+            &:hover, &:active {
+                transform: scale(1) translateX(-50%);
+            }
+        }
+    }
+
+
+
+
+
 
 }
