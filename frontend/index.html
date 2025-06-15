@@ -67,8 +67,9 @@
 
     <div id="gameover" hidden="true">
         <div>
-            <span>Game Over!</span> <br>
-            <span id="gameover-winner">Spieler O hat gewonnen!</span>
+            <div id="gameover-title">Game Over!</div> <br>
+            <div id="gameover-winner-wrapper"><span id="gameover-winner">O</span> hat gewonnen!</div> <br>
+            <div id="gameover-return">Menü (<span id="gameover-return-countdown">7</span>)</div>
         </div>
     </div>
 
@@ -120,13 +121,43 @@
                 crossToTurn = false;
                 selfIsCross = false;
 
+                $("#gameover-winner").text(w);
                 $("#gameover").show();
 
                 setTimeout(function() {
+                    $("#gameover-return-countdown").text("6");
+                    playerTurns.forEach(function(value, index) {
+                            if (value != '') {
+                                $( "#game-button-"+index.toString() ).text(value);
+                                $( "#game-button-"+index.toString() ).attr("data-player", value);
+                            } else {
+                                $( "#game-button-"+index.toString() ).html("&nbsp;");
+                                $( "#game-button-"+index.toString() ).removeAttr("data-player");
+                            }
+                    });
+                }, 1000);
+                setTimeout(function() {
+                    $("#gameover-return-countdown").text("5");
+                }, 2000);
+                setTimeout(function() {
+                    $("#gameover-return-countdown").text("4");
+                }, 3000);
+                setTimeout(function() {
+                    $("#gameover-return-countdown").text("3");
+                }, 4000);
+                setTimeout(function() {
+                    $("#gameover-return-countdown").text("2");
+                }, 5000);
+                setTimeout(function() {
+                    $("#gameover-return-countdown").text("1");
+                }, 6000);
+                setTimeout(function() {
                     $("#gameover").fadeOut();
-                    $("#prepop").show();
-                }, 7000);
-
+                    $("#prepop").fadeIn();
+                }, 6800);
+                setTimeout(function() {
+                    $("#gameover-return-countdown").text("7");
+                }, 10000);
             }
         }
           
@@ -437,12 +468,16 @@
             $("#prepop-join").on("click", function(){$("#joincode").show(); $("#prepop").hide();});
             $("#joincode-button").on("click", joinGameHandler);
 
+            $("#gameover-return").on("click", function() {
+                $("#gameover").hide();
+                $("#prepop").show();
+            });
 
             $("#dismissStartPopup").on("click", function() {
                 $("#prepop").hide();
                 $("#turnInfo").show();
                 testMode = true;
-            })
+            });
 
 
 

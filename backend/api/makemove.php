@@ -3,6 +3,25 @@ require_once 'env.php';
 require_once 'get_payload.php';
 require_once 'getGames.php';
 
+
+function checkWinner($board) { // returns 'X', 'O', or null
+    $winningCombinations = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
+        [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
+        [0, 4, 8], [2, 4, 6]             // diagonals
+    ];
+
+    foreach ($winningCombinations as $combination) {
+        list($a, $b, $c) = $combination;
+        if ($board[$a] && $board[$a] === $board[$b] && $board[$a] === $board[$c]) {
+            return $board[$a]; 
+        }
+    }
+
+    return null; // no winner
+}
+
+
 try {
 
 $conn = new mysqli($server, $username, $password, $database);
@@ -70,13 +89,27 @@ if ($field < 0 or $field > 9) {
         $stmt->execute();
         $stmt->close();
 
+        $gameState = json_decode($gameState);
+
         echo json_encode([
             "success" => true,
             "message" => "Made move",
             "field" => $field,
-            "gameState" => json_decode($gameState)
+            "gameState" => $gameState
         ]);
 
+        if (null !== checkWinner($gameState)) {
+            ob_flush();
+            flush();
+
+            sleep(20);
+
+            $stmt = $conn->prepare("DELETE FROM `tictactoe` WHERE `gameId` LIKE ?");
+            $stmt->bind_param("i", $gameId);
+            $stmt->execute();
+            $stmt->close();
+
+        }
 
 
     } else {

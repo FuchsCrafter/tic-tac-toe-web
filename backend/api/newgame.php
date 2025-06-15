@@ -1,6 +1,20 @@
 <?
 require_once 'env.php';
+require_once 'getGames.php';
 
+
+function timeSince($timestamp) {
+    $pastDateTime = new DateTime($timestamp);
+    $currentDateTime = new DateTime();
+    $interval = $currentDateTime->diff($pastDateTime);
+    $totalSeconds = ($interval->y * 365 * 24 * 60 * 60) + 
+                    ($interval->m * 30 * 24 * 60 * 60) + 
+                    ($interval->d * 24 * 60 * 60) + 
+                    ($interval->h * 60 * 60) + 
+                    ($interval->i * 60) + 
+                    $interval->s;
+    return $totalSeconds;
+}
 
 
 try {
@@ -82,6 +96,24 @@ if ($stmt->execute()) {
         "message" => "Error whilst creating new game (insertion error)"
     ]);
 }
+
+try {
+$games = getGames($conn);
+$gameId = 0;
+foreach ($games as $gameId => $game) {
+    $lastUpdate = $game["lastUpdate"];
+    $diff = timeSince($lastUpdate);
+    if ($diff > 1200) {
+        $sql = "DELETE FROM `tictactoe` WHERE `lastUpdate` LIKE '" . $lastUpdate . "'";
+        $conn->query($sql);
+    }
+}
+} catch (\Throwable $th) {
+    //pass
+}
+
+
+
 
 $stmt->close();
 $conn->close();
