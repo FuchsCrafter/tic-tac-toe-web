@@ -52,7 +52,7 @@
 
     <div id="prejoin" hidden="true">
         <span id="prejoin-title">Ihr Beitrittscode lautet:</span>
-        <h1 id="prejoin-gameid"></h1>
+        <h1 id="prejoin-gameid-wrapper"><input type="text" id="prejoin-gameid" readonly/></h1>
         <span id="prejoin-subtitle">Warten auf Spieler 2...</span>
     </div>
 
@@ -90,8 +90,9 @@
 
 
         function output(msg) {
-            $("#output").append(msg);
-            $("#output").append("<br>");
+            // $("#output").append(msg);
+            // $("#output").append("<br>");
+            console.log(msg);
         }
 
         function checkWinner(board) { // returns X or O or null
@@ -240,9 +241,13 @@
                         output(`Player ID: ${playerId}, Game ID: ${gameId}`);
 
                         $("#prejoin").show();
-                        $("#prejoin-gameid").text(`${gameId.toString().substring(0,3)} ${gameId.toString().substring(3)}`);
-                        $("#prejoin-gameid").on("click", function() {
+
+                        $("#prejoin-gameid").val(`${gameId.toString().substring(0,3)} ${gameId.toString().substring(3)}`);
+
+                        $("#prejoin-gameid-wrapper").on("click", function() {
                             navigator.clipboard.writeText(gameId.toString());
+                            $("#prejoin-gameid").select();
+
                         });
 
                         setTimeout(waitForPlayerConnection, 3000);
