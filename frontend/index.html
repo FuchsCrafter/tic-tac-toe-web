@@ -10,7 +10,7 @@
 
     <div class="output" id="output"></div>
 
-    <div id="turnInfo" hidden="true"><h1>Sie sind am Zug</h1></div>
+    <div id="turnInfo" hidden="true" translation="turnInfo"><h1>Sie sind am Zug</h1></div>
 
 
     <div id="game">
@@ -37,9 +37,9 @@
         <h1>Tic Tac Toe</h1> 
         <div id="prepop-panel">
 
-            <div class="prepop-option" id="prepop-new"><span>Neues<br>Spiel</span></div>
-            <div class="prepop-option" id="prepop-join"><span>Spiel<br>beitreten</span></div>
-            <div class="prepop-option" id="dismissStartPopup"><span>Einzel-<br>spieler</span></div>
+            <div class="prepop-option" id="prepop-new"><span translation="newgame">Neues<br>Spiel</span></div>
+            <div class="prepop-option" id="prepop-join"><span translation="joingame">Spiel<br>beitreten</span></div>
+            <div class="prepop-option" id="dismissStartPopup"><span translation="singleplayer">Einzel-<br>spieler</span></div>
 
             <!--<div class="prepop-option" id="prepop-join">
                 <h2>Spiel beitreten</h2>
@@ -51,25 +51,25 @@
     </div>
 
     <div id="prejoin" hidden="true">
-        <span id="prejoin-title">Ihr Beitrittscode lautet:</span>
+        <span id="prejoin-title" translation="prejoin-title">Ihr Beitrittscode lautet:</span>
         <h1 id="prejoin-gameid-wrapper"><input type="text" id="prejoin-gameid" readonly/></h1>
-        <span id="prejoin-subtitle">Warten auf Spieler 2...</span>
+        <span id="prejoin-subtitle" translation="prejoin-subtitle">Warten auf Spieler 2...</span>
     </div>
 
     <div id="joincode" hidden="true">
-        <span id="joincode-title">Spiel Beitreten</span>
+        <span id="joincode-title" translation="joincode-title">Spiel Beitreten</span>
         <div>
             <input type="text" id="joincode-input" name="joincode-input"> <br>
-            <label for="joincode-input" id="joincode-label">Bitte Beitrittscode eingeben!</label>
+            <label for="joincode-input" id="joincode-label" translation="joincode-label">Bitte Beitrittscode eingeben!</label>
         </div>
-        <div id="joincode-button">Beitreten!</div>
+        <div id="joincode-button" translation="joincode-button">Beitreten!</div>
     </div>
 
     <div id="gameover" hidden="true">
         <div>
-            <div id="gameover-title">Game Over!</div> <br>
-            <div id="gameover-winner-wrapper"><span id="gameover-winner">O</span> hat gewonnen!</div> <br>
-            <div id="gameover-return">Menü (<span id="gameover-return-countdown">7</span>)</div>
+            <div id="gameover-title" translation="gameover-title">Game Over!</div> <br>
+            <div id="gameover-winner-wrapper" translation="gameover-winner-wrapper"><span id="gameover-winner">O</span> hat gewonnen!</div> <br>
+            <div id="gameover-return" translation="gameover-return" >Menü (<span id="gameover-return-countdown">7</span>)</div>
         </div>
     </div>
 
@@ -78,6 +78,9 @@
 
         const backend = "http://davidvos.de/services/ttt/backend/api";
         const backendFileExt = ".php";
+
+
+        var language = "en";
 
 
         var crossToTurn = false;
@@ -430,6 +433,36 @@
                 });
         }
 
+        function updateTranslation() {
+            fetch("./translations.json")
+                .then(response => {
+                    if (!response.ok) { 
+                        throw new Error('Network response was not ok ' + response.statusText);
+                        alert("Failed to get translations!")
+                    }
+                    return response.json();
+                
+                })
+                .then(data => {
+
+                    var currentLanguageStrings = data["translations"][language];
+                    console.log(currentLanguageStrings);
+
+                    Object.entries(currentLanguageStrings).forEach(([key,value]) => {
+                        let elementId = `[translation=${key}]`;
+                        let elementValue = value;
+                        $(elementId).html(elementValue);
+
+                    })
+                    
+                })
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation:', error);
+                     
+                });
+
+        }
+
 
         window.addEventListener('load', function() {
             $(".game-button").map(function() {
@@ -483,6 +516,8 @@
                 $("#turnInfo").show();
                 testMode = true;
             });
+
+            updateTranslation();
 
 
 

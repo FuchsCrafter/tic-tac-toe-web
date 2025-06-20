@@ -1,0 +1,34 @@
+{
+    "available": ["de", "en"],
+    "translations": {
+        "de": {
+            "newgame": "Neues<br>Spiel",
+            "joingame": "Spiel<br>beitreten",
+            "singleplayer": "Einzel-<br>spieler",
+            "prejoin-title": "Ihr Beitrittscode lautet:",
+            "prejoin-subtitle": "Warten auf Spieler 2...",
+            "joincode-title": "Spiel beitreten",
+            "joincode-label": "Bitte Beitrittscode eingeben!",
+            "joincode-button": "Beitreten!",
+            "gameover-title": "Game Over!",
+            "gameover-winner-wrapper": "<span id='gameover-winner'>O</span> hat gewonnen!",
+            "gameover-return": "Menü (<span id='gameover-return-countdown'>7</span>)",
+            "turnInfo": "Sie sind am Zug!"
+        },
+        "en": {
+            "newgame": "New<br>Game",
+            "joingame": "Join<br>Game",
+            "singleplayer": "Single<br>Player",
+            "prejoin-title": "Your join code is:",
+            "prejoin-subtitle": "Waiting for player 2...",
+            "joincode-title": "Join Game",
+            "joincode-label": "Please enter join code!",
+            "joincode-button": "Join!",
+            "gameover-title": "Game Over!",
+            "gameover-winner-wrapper": "<span id='gameover-winner'>O</span> has won!",
+            "gameover-return": "Menu (<span id='gameover-return-countdown'>7</span>)",
+            "turnInfo": "It's your turn!"
+        }
+
+    }
+}
