@@ -1,9 +1,9 @@
 # tic-tac-toe-web
-This project aims to bring the classic tic-tac-toe-game to the web. Because the backend is written in PHP, this project can be self-hosted on almost every hosting provider.
+This project aims to bring the classic tic-tac-toe-game to the web plattform. Because the backend is written in PHP, this project can be self-hosted on almost every hosting provider.
 
 ## Trying it out
 
-You can try the game out by clicking the link on the sidebar.
+You can try the game out by clicking the link on the sidebar (TBD).
 
 ## Self-Hosting
 
