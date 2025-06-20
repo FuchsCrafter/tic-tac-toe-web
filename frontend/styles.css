@@ -1,5 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Racing+Sans+One&display=swap");
-.racing-sans-one-regular, #gameover, #joincode #joincode-button, #joincode input, #joincode, #prejoin, #prepop #prepop-panel .prepop-option span, #prepop h1, #game .game-button, #turnInfo {
+.racing-sans-one-regular, #gameover, #joincode #joincode-button, #joincode input, #joincode, #prejoin #prejoin-gameid-wrapper #prejoin-gameid, #prejoin, #prepop #prepop-panel .prepop-option span, #prepop h1, #game .game-button, #turnInfo {
   font-family: "Racing Sans One", sans-serif;
   font-weight: 400;
   font-style: normal;
@@ -260,7 +260,7 @@ body {
     border-radius: 0px !important;
   }
 }
-#prejoin #prejoin-gameid {
+#prejoin #prejoin-gameid-wrapper {
   background-color: #FF6361;
   font-size: 128px;
   padding: 10px;
@@ -270,22 +270,38 @@ body {
   width: 590px;
 }
 @media screen and (max-width: 1050px) {
-  #prejoin #prejoin-gameid {
+  #prejoin #prejoin-gameid-wrapper {
     font-size: 70px;
     width: 420px;
     max-width: 80vw;
   }
 }
-#prejoin #prejoin-gameid:hover {
+#prejoin #prejoin-gameid-wrapper #prejoin-gameid {
+  font-size: 128px;
+  width: 580px;
+  height: 128px;
+  text-align: center;
+  background-color: #FF6361;
+  color: white;
+  border: none;
+  outline: none;
+}
+#prejoin #prejoin-gameid-wrapper *::-moz-selection {
+  background-color: #FFA600;
+}
+#prejoin #prejoin-gameid-wrapper *::selection {
+  background-color: #FFA600;
+}
+#prejoin #prejoin-gameid-wrapper:hover {
   transform: scale(1.05);
   transition: transform 150ms ease;
   cursor: pointer;
 }
-#prejoin #prejoin-gameid:hover:active {
+#prejoin #prejoin-gameid-wrapper:hover:active {
   transform: scale(1);
 }
 @media screen and (min-width: 1051px) {
-  #prejoin #prejoin-gameid:hover::after {
+  #prejoin #prejoin-gameid-wrapper:hover::after {
     z-index: 970;
     position: absolute;
     left: -100px;
@@ -301,7 +317,7 @@ body {
   }
 }
 @media screen and (max-width: 1050px) {
-  #prejoin #prejoin-gameid:hover {
+  #prejoin #prejoin-gameid-wrapper:hover {
     transform: scale(1);
   }
 }
