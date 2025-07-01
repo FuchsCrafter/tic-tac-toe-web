@@ -142,7 +142,7 @@ body {
 #prepop {
 
     box-sizing: border-box;
-    z-index: 999;
+    z-index: 500;
     position: absolute;
     top: 50%;
     left: 50%;
@@ -277,9 +277,160 @@ body {
     }
 }
 
+#language-selection-wrapper {
+
+
+    z-index: 800;
+    position: absolute;
+
+    top: 87vh;
+    left: 91vw;
+
+    height: 100px;
+    width: 100px;
+    background-color: #FFD380;
+    border: none;
+    outline: none;
+    border-radius: 15px;
+    cursor:pointer;
+    
+    //transform: translateY(25%);
+    transform: scale(1);
+    transition: transform 150ms ease, height 150ms ease, width 150ms ease, top 150ms ease, left 150ms ease;
+
+    overflow: hidden;
+
+    #language-selection-icon {
+        transform: translate(-50%,-50%);
+        position: relative;
+        top: 50%;
+        left: 50%;
+        opacity: 1;
+        display: initial;
+    }
+    #language-selection-wrapper-active {
+        opacity: 0;
+        display: none;
+
+    }
+
+    &.active {
+        cursor: unset;
+        width: 370px;
+        height: 350px;
+
+        top: 63vh;
+        left: 78vw;
+
+        #language-selection-icon {
+            display: none;
+            opacity: 0;
+        }
+
+        @media screen and (max-width: 1050px) { 
+            margin: 0;
+            width: 83.25vw;
+            left: 8.5vw;
+            top: 65vh;
+        }
+
+        #language-selection-wrapper-active {
+            opacity: 1;
+            display: initial;
+
+            @extend .racing-sans-one-regular;
+
+            h1 {
+                font-size: 60px;
+                text-align: center;
+                margin: 20px;
+                margin-bottom: 5px;
+            }
+
+            #language-selection-buttons {
+                overflow-y:auto;
+
+                height: 230px;
+                padding: 10px;
+                
+
+                display: flex;
+                flex-flow: column nowrap;
+                justify-content: space-evenly;
+                align-items: center;
+                gap: 15px;
+
+                button {
+                    width: 270px;
+                    height: 80px;
+                    font-size: 48px;
+                    @extend .racing-sans-one-regular;
+                    border: none;
+                    outline: none;
+                    border-radius: 15px;
+                    background-color: #2C4875;
+                    color: white;
+                    cursor: pointer;
+
+                    transition: transform 150ms ease;
+                    transform: scale(1);
+
+                    &:hover {
+                        transform: scale(1.05);
+                        &:active {
+                            transform: scale(1);
+                        }
+                    }
+
+                    @media screen and (max-width: 1050px) {
+                        &:hover {
+                            transform: scale(1);
+                        }
+                    }
+                }
+            }
+
+        }
+
+        &:hover {
+            transform: scale(1);
+            &:active {
+                transform: scale(1);
+        }
+
+
+    } 
+    }
+
+    &:hover {
+        transform: scale(1.05);
+        &:active {
+            transform: scale(1);
+        }
+    }
+
+    @media screen and (max-width: 1050px) {
+        &:hover, &:active {
+            transform: scale(1);
+        }
+        max-width: 90vw;
+
+        position: relative;
+
+        margin: 0;
+        width: 83.25vw;
+        left: 8.5vw;
+        top: 93vh;
+
+
+        
+    }
+
+}
+
 #prejoin {
     box-sizing: border-box;
-    z-index: 900;
+    z-index: 400;
     position: absolute;
     top: 50%;
     left: 50%;
@@ -378,7 +529,7 @@ body {
 
             @media screen and (min-width: 1051px){
                 &::after {
-                    z-index: 970;
+                    z-index: 410;
                     position: absolute;
                     left: -100px;
                     top: 50px;
@@ -413,7 +564,7 @@ body {
 #joincode {
 
     box-sizing: border-box;
-    z-index: 900;
+    z-index: 401;
     position: absolute;
     top: 50%;
     left: 50%;
@@ -535,7 +686,7 @@ body {
 
 #gameover {
     box-sizing: border-box;
-    z-index: 999;
+    z-index: 600;
     position: absolute;
     top: 50%;
     left: 50%;
