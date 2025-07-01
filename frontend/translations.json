@@ -1,5 +1,8 @@
 {
-    "available": ["de", "en"],
+    "available": {
+        "de": "Deutsch", 
+        "en": "English"
+    },
     "translations": {
         "de": {
             "newgame": "Neues<br>Spiel",
@@ -13,7 +16,8 @@
             "gameover-title": "Game Over!",
             "gameover-winner-wrapper": "<span id='gameover-winner'>O</span> hat gewonnen!",
             "gameover-return": "Menü (<span id='gameover-return-countdown'>7</span>)",
-            "turnInfo": "Sie sind am Zug!"
+            "turnInfo": "Sie sind am Zug!",
+            "language": "Sprache"
         },
         "en": {
             "newgame": "New<br>Game",
@@ -27,7 +31,8 @@
             "gameover-title": "Game Over!",
             "gameover-winner-wrapper": "<span id='gameover-winner'>O</span> has won!",
             "gameover-return": "Menu (<span id='gameover-return-countdown'>7</span>)",
-            "turnInfo": "It's your turn!"
+            "turnInfo": "It's your turn!",
+            "language": "Language"
         }
 
     }

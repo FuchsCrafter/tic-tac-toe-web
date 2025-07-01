@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TictacToe</title>
+    <title>TicTacToe</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -31,10 +31,24 @@
         </div>        
     </div>
 
+    <div id="language-selection-wrapper" class="">
+        <svg id="language-selection-icon" xmlns="http://www.w3.org/2000/svg" height="64px" viewBox="0 -960 960 960" width="64px" fill="#000000"><path d="M459.17-65.87 645.3-565.09h108.4L939.26-65.87h-86.48l-38.21-98.91H582.3l-38.21 98.91h-84.92ZM155.22-182.91l-56.13-56.13 198.73-198.18q-54.95-57.52-90.58-112.58-35.63-55.07-51.94-105.11h89.31q12.61 36.21 39.82 75.95 27.22 39.74 70.53 84.61 44.87-48 82.17-114.39 37.3-66.39 52.61-126.17H23.04v-79.79h290v-80h79.79v80h290v79.79H575.48q-17.57 75.74-62.91 156.95-45.35 81.22-102.61 141.18l81.65 83.08-31.35 85.05-107.43-111.44-197.61 197.18Zm454.3-56.65h177.83l-88.92-236.7-88.91 236.7Z"/></svg>            
+        <div id="language-selection-wrapper-active">
+            <h1 translation="language">Language</h1>
+            <div id="language-selection-buttons">
+                
+                <!--<button class="language-selection-active-button" id="lang-en">English</button>-->
+            </div>
 
+        </div>
+    </div> 
     <!-- #prepop-new #dismissStartPopup #prepop-join -->
     <div id="prepop">
-        <h1>Tic Tac Toe</h1> 
+        <div id="prepop-header">
+            <h1>Tic Tac Toe</h1>
+  
+        
+        </div>
         <div id="prepop-panel">
 
             <div class="prepop-option" id="prepop-new"><span translation="newgame">Neues<br>Spiel</span></div>
@@ -433,6 +447,11 @@
                 });
         }
 
+        function setLanguage(lang) {
+            language = lang;
+            updateTranslation();
+        }
+
         function updateTranslation() {
             fetch("./translations.json")
                 .then(response => {
@@ -444,6 +463,14 @@
                 
                 })
                 .then(data => {
+                    $("#language-selection-buttons").html("");
+                    Object.entries(data["available"]).forEach(([key,value])=> {
+                        $("#language-selection-buttons").append(`
+
+                        <button class="language-selection-active-button" id="lang-${key}" data-language-key="${key}">${value}</button>
+                        
+                        `);
+                    })
 
                     var currentLanguageStrings = data["translations"][language];
                     console.log(currentLanguageStrings);
@@ -454,6 +481,18 @@
                         $(elementId).html(elementValue);
 
                     })
+
+                    $(".language-selection-active-button").on("click", function(){
+
+                        let languageKey = $(this).attr("data-language-key");
+
+                        setTimeout(function(){ 
+                            $("#language-selection-wrapper").removeClass("active");
+                            setLanguage(languageKey);
+                        
+                        }, 5);
+
+                    });
                     
                 })
                 .catch(error => {
@@ -518,6 +557,14 @@
             });
 
             updateTranslation();
+
+            $("#language-selection-wrapper").on("click", function() {
+                if (!$("#language-selection-wrapper").hasClass("active")) {
+                    $("#language-selection-wrapper").addClass("active");
+                }
+            });
+
+
 
 
 
