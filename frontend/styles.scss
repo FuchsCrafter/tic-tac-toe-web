@@ -311,6 +311,7 @@ body {
     #language-selection-wrapper-active {
         opacity: 0;
         display: none;
+
     }
 
     &.active {
@@ -343,14 +344,21 @@ body {
                 font-size: 60px;
                 text-align: center;
                 margin: 20px;
+                margin-bottom: 5px;
             }
 
             #language-selection-buttons {
+                overflow-y:auto;
+
+                height: 230px;
+                padding: 10px;
+                
+
                 display: flex;
                 flex-flow: column nowrap;
-                justify-content: center;
+                justify-content: space-evenly;
                 align-items: center;
-                gap: 25px;
+                gap: 15px;
 
                 button {
                     width: 270px;
